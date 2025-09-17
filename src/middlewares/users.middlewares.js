@@ -16,11 +16,16 @@ export async function userExists(req, res, next) {
     try {
         const user = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
         if (user.rows.length === 0) return res.status(404).send("E-mail não cadastrado");
-        const { id, password: savedPassword } = user.rows[0];
+
+        const { id, name, password: savedPassword } = user.rows[0];
+
+        await db.query(`DELETE FROM sessions WHERE "userId" = $1`, [id]);
+        
         res.locals.savedPassword = savedPassword;
         res.locals.id = id;
+        res.locals.name = name;
         next();
     } catch (err) {
         res.status(500).send(err.message);
     }
-}
+};

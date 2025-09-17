@@ -4,7 +4,7 @@ export async function checkShortUrlExist(req, res, next) {
     const { shortUrl } = req.params;
     try {
         const resultUrl = await db.query(`SELECT * FROM urls WHERE "shortUrl" = $1`, [shortUrl]);
-        if (resultUrl.rows.length === 0) return res.sendStatus(404);
+        if (resultUrl.rows.length === 0) return res.status(404).send("Url não existe!");
 
         const { id, url } = resultUrl.rows[0];
         res.locals.id = id;
@@ -21,7 +21,7 @@ export async function checkUrlById(req, res, next) {
     const { user } = res.locals;
     try{
         const urlExist = await db.query(`SELECT * FROM urls WHERE id = $1`, [id]);
-        if(urlExist.rows.length === 0) return res.sendStatus(404);
+        if(urlExist.rows.length === 0) return res.status(404).send("Url não existe!");
 
         const url = urlExist.rows[0];
         if(url.userId !== user.id)return res.sendStatus(401);
